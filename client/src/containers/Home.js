@@ -6,17 +6,7 @@ class Home extends Component {
   
   render () {
     return (
-      <div>
-        <div className="overlay">
-          <div className="overlay-inner">
-          <button className="close">× Close</button>
-          {/* <img> */}
-          </div>
-        </div>
-
-        <section className="gallery">
-        </section>
-      </div>
+      <div className="home-div">HOME</div>
     )
   }
 }
