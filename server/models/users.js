@@ -12,7 +12,7 @@ const Users = new Schema({
     default: 'testEmail'
   },
   _images: [{
-    type: [Schema.Types.ObjectId], 
+    type: Schema.Types.Mixed, 
     ref: 'Images'
   }],
 });

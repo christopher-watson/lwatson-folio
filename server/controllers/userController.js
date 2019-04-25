@@ -5,15 +5,20 @@ module.exports = {
   findAll: function (req, res) {
     db
       .User
-        .find(req.query)
-        .sort({date: 1})
-        .then(dbModel => res.json(dbModel))
-        .catch(err => res.status(422).json(err));
+      .find(req.query)
+      .sort({
+        date: 1
+      })
+      .then(dbModel => res.json(dbModel))
+      .catch(err => res.status(422).json(err));
   },
   findByUserName: function (req, res) {
+    // console.log(req.params)
     db
       .User
-      .findOne({username: req.params.id})
+      .findOne({
+        username: req.params.username
+      })
       .then(dbModel => res.json(dbModel))
       .catch(err => res.status(422).json(err));
   },
@@ -43,46 +48,48 @@ module.exports = {
   remove: function (req, res) {
     db
       .User
-      .findById({_id: req.params.id})
+      .findById({
+        _id: req.params.id
+      })
       .then(dbModel => dbModel.remove())
       .then(dbModel => res.json(dbModel))
       .catch(err => res.status(422).json(err));
   },
-  addImage: function(req, res) {
+  addImage: function (req, res) {
     console.log(req.params.id)
     db
       .User
       .findOneAndUpdate(
-        {_id: req.params.id},
-        {$push: {_images: req.body}},
+        { _id: req.params.id}, 
+        { $push: { _images: req.body } },
         // {safe: true, upsert: true},
       )
       .then(dbModel => res.json(dbModel))
       .catch(err => res.status(422).json(err));
   },
-
-
-  // register: function (req, res) {
-  //   /* To create a new user */
-  //   const user = new User({
-  //     username: req.body.username,
-  //     name: req.body.name,
-  //     photo: req.body.photo,
-  //     email: req.body.email,
-  //     phone: req.body.phone,
-  //     twitter: req.body.twitter,
-  //     fb: req.body.fb,
-  //     link: req.body.link,
-  //     git: req.body.link
-  //   })
-  //   User
-  //     .register(user, req.body.password, function (err) {
-  //       if (err) {
-  //         console.log('error while user register!', err);
-  //         return res.status(422).json(err);
-  //       }
-  //       console.log('user registered!');
-  //       res.json(true);
-  //     });
-  // }
+  removeImage: function (req, res) {
+    console.log(req.params.id)
+    db
+      .User
+      .findOneAndUpdate(
+        { _id: req.params.id}, 
+        { $pull: { _images: req.body }},
+      )
+      .then(dbModel => res.json(dbModel))
+      .catch(err => res.status(422).json(err));
+  },
+  register: function (req, res) {
+    const user = new User({
+      username: req.body.username,
+    })
+    User
+      .register(user, req.body.password, function (err) {
+        if (err) {
+          console.log('error while user register!', err);
+          return res.status(422).json(err);
+        }
+        console.log('user registered!');
+        res.json(true);
+      });
+  }
 };
