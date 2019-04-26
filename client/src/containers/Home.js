@@ -15,12 +15,35 @@ export class MyProvider extends Component {
     this.getImages()
   }
   
+  componentDidMount() {
+    this.handleResize()
+    window.addEventListener('resize', this.handleResize)
+  }
+  
+  handleResize = () => {
+    // console.log(window.innerWidth)
+    if(window.innerWidth < 901) {
+      this.setState({ mobile: true })
+    }
+    else {
+      this.setState ({ mobile: false })
+    }
+  }
+
   getImages = () => {
     API
       .findUser('lwatson14')
       .then(res => {
+        let hArray = [];
+        let wArray = [];
+        for (var i=0; i < res.data._images.length; i++) {
+          hArray[i] = Math.floor(Math.random() * 2) + 1;
+          wArray[i] = Math.floor(Math.random() * 2) + 1;
+        }
         this.setState({
-          images: [...res.data._images]
+          images: [...res.data._images],
+          hArray: [...hArray],
+          wArray: [...wArray]
         })
       })
       .catch(err => console.log(err))
@@ -41,27 +64,25 @@ export class MyProvider extends Component {
   }
 
   leftArrowClick = () => {
-    console.log(this.state.displayImageIndex)
-    if(!this.state.galleryView){
-      if (this.state.displayImageIndex-1 === -1){
-        this.setState({ displayImageIndex: this.state.images.length })
-      }
-      else {
-        this.setState({ displayImageIndex: this.state.displayImageIndex-1 })
-      }
-    }
+    const lastIndex = this.state.images.length - 1;
+    const currentImageIndex  = this.state.displayImageIndex;
+    const shouldResetIndex = currentImageIndex === 0;
+    const index =  shouldResetIndex ? lastIndex : currentImageIndex - 1;
+
+    this.setState({
+      displayImageIndex: index
+    });
   }
 
   rightArrowClick = () => {
-    console.log(this.state.displayImageIndex)
-    if(!this.state.galleryView){
-      if (this.state.displayImageIndex+1 === this.state.images.length){
-        this.setState({ displayImageIndex: 0 })
-      }
-      else {
-        this.setState({ displayImageIndex: this.state.displayImageIndex+1 })
-      }
-    }
+    const lastIndex = this.state.images.length - 1;
+    const currentImageIndex  = this.state.displayImageIndex;
+    const shouldResetIndex = currentImageIndex === lastIndex;
+    const index =  shouldResetIndex ? 0 : currentImageIndex + 1;
+
+    this.setState({
+      displayImageIndex: index
+    });
   }
 
   render() {
@@ -72,6 +93,10 @@ export class MyProvider extends Component {
         galleryView: this.state.galleryView,
         images: this.state.images,
         displayImageIndex: this.state.displayImageIndex,
+        mobile: this.state.mobile,
+        hArray: this.state.hArray,
+        wArray: this.state.wArray,
+        
         
         // functions
         getIndex: this.getIndex,
@@ -92,9 +117,14 @@ export class MyProvider extends Component {
 const Navbar = () => {
   return (
     <MyContext.Consumer>
-      {({ showGalleryView, leftArrowClick, rightArrowClick }) => (
+      {({ showGalleryView, leftArrowClick, rightArrowClick, mobile }) => (
         <div className='nav-div'>
+        {
+          mobile ?
+          <div className="logo">LW</div>
+          :
           <div className="logo">Lindsay<br/>Watson</div>
+        }
           <div className="info-text">
             <ul className='info-ul'>
               <li className='info-li'>Modeling</li>
@@ -103,19 +133,18 @@ const Navbar = () => {
               <li className='info-li'>Fitness</li>
             </ul>
           </div>
-          <div className="cta">Contact</div>
+          <div className="cta">
+            {
+              mobile ?
+              <a className='cta-link' href="mailto:malerming@saltmat.com"><i className="far fa-envelope"></i></a>
+              :
+              <a className='cta-link' href="mailto:malerming@saltmat.com">Contact</a>
+            }
+          </div>
           <div className="social">
-            <ul className='social-ul'>
-              <li className='social-li hover'><a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
-                <i className="fab fa-instagram"></i></a>
-              </li>
-              <li className='social-li hover'><a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
-                <i className="fab fa-facebook-f"></i></a>
-              </li>
-              <li className='social-li hover'><a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
-                <i className="fab fa-linkedin-in"></i></a>
-              </li>
-            </ul>
+            <a className='social-item hover' href="https://www.instagram.com/lindsayawatson" target="_blank" rel="noopener noreferrer">
+              <i className="fab fa-instagram"></i>
+            </a>
           </div>
           <div className="pagination">
             <div className='left-arrow hover' onClick={() => leftArrowClick()}><i className="fas fa-angle-double-left"></i></div>
@@ -132,12 +161,12 @@ const Navbar = () => {
 class Gallery extends Component {
 
   render() {
-    function randomNumber(limit){
-      return Math.floor(Math.random() * limit) + 1;
-    }
+    // function randomNumber(limit){
+    //   return Math.floor(Math.random() * limit) + 1;
+    // }
     return (
       <MyContext.Consumer>
-        {({ galleryView, images, showDisplayImage, displayImageIndex, showGalleryView }) => (
+        {({ galleryView, images, showDisplayImage, displayImageIndex, showGalleryView, hArray, wArray }) => (
           <div className="gallery-div">
           {
 
@@ -145,7 +174,7 @@ class Gallery extends Component {
 
             <div className="inner-gallery-div">
               {images.map((image, index) => (
-                <div key={index} className='gallery-map-div hover' grid-w={randomNumber(2)} grid-h={randomNumber(2)}>
+                <div key={index} className='gallery-map-div hover' grid-w={wArray[index]} grid-h={hArray[index]}>
                   <img className='gallery-page-image' src={image.url} alt={`Lindsay: ${index+1}`} onClick={() => showDisplayImage(index)}/>
                 </div>
               ))}
