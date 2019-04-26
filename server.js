@@ -17,6 +17,10 @@ app.use(morgan('dev')); // for logging
 // Static assets
 app.use(express.static(path.join(__dirname, 'client/build')));
 
+// Import routes
+const routes = require('./server/routes');
+app.use(routes);
+
 // Use sessions to keep track of login status
 app.use(session({secret: "mastadon", resave: true, saveUninitialized: true}));
 app.use(passport.initialize());
@@ -27,10 +31,6 @@ const User = require('./server/models/users');
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-
-// Import routes
-const routes = require('./server/routes');
-app.use(routes);
 
 // DB Config
 const keys = require("./config/keys");
