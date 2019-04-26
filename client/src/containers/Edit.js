@@ -5,30 +5,28 @@ import API from '../utils/API';
 class Edit extends Component {
   state = {
     redirectHome: false,
-    redirectUpload: false,
-    isLoggedIn: false,
     loginInvalid: false,
+    loggedInUser: '',
     username: "",
     images: [],
   }
-
+  
   componentDidMount() {
     this.loginCheck();
-    this.getImages();
   }
-  
+
   loginCheck = () => {
     API
       .loginCheck()
       .then(res => {
         if (res.data.username === 'lwatson14'){
           console.log('👍🏽')
-          this.setState({ isLoggedIn: true })
+          this.setState({ isLoggedIn: true, loggedInUser: 'lwatson14' })
+          this.getImages()
         }
       })
       .catch(err => {
         console.log(err);
-        this.setState({isLoggedIn: false})
       })
   }
   
@@ -46,7 +44,8 @@ class Edit extends Component {
       .then(res => {
         if (res.data.username === 'lwatson14'){
           console.log('👍🏽')
-          this.setState({ isLoggedIn: true })
+          this.setState({ isLoggedIn: true, loggedInUser: 'lwatson14' })
+          this.getImages()
         }
       })
       .catch(err => {
@@ -61,7 +60,7 @@ class Edit extends Component {
 
   getImages = () => {
     API
-      .findUser('lwatson14')
+      .findUser(this.state.loggedInUser)
       .then(res => {
         console.log('📷')
         this.setState({
@@ -73,9 +72,8 @@ class Edit extends Component {
 
   logout = () => {
     API
-      .logout({ username: this.state.username })
+      .logout({username: 'lwatson14'})
       .then(
-        this.setState({ isLoggedIn: false }),
         this.setRedirectHome,
       )
       .catch(err => console.log(err.response));
@@ -93,16 +91,9 @@ class Edit extends Component {
     })
   }
 
-
   renderRedirectHome = () => {
     if (this.state.redirectHome) {
       return <Redirect to='/' />
-    }
-  }
-
-  renderRedirectEdit = () => {
-    if (this.state.redirectEdit) {
-      return <Redirect to='/edit' />
     }
   }
 
@@ -163,7 +154,6 @@ class Edit extends Component {
     return (
       <div className='edit-container'>
         {this.renderRedirectHome()}
-        {this.renderRedirectEdit()}
       {
 
         this.state.isLoggedIn ?

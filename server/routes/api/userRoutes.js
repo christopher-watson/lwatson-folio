@@ -19,7 +19,7 @@ router
     res.json(req.user);
   })
   .get(function (req, res) {
-    // console.log(req.user);
+    console.log(req.user);
     if (req.user) {
       res.json({
         isLoggedIn: true,
@@ -35,8 +35,9 @@ router
   .route('/logout')
   .get(function (req, res) {
     req.logout()
-    console.log(`${req.user.username} has logged out`)
-    res.json(false);
+    // console.log(`logged out`)
+    // res.json(false);
+    res.redirect('/');
   })
 
 // add image to user _image array -- api/users/add/imageid
