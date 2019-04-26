@@ -14,6 +14,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('dev')); // for logging
 
+// Static assets
+app.use(express.static(path.join(__dirname, 'client/build')));
+
 // Use sessions to keep track of login status
 app.use(session({secret: "mastadon", resave: true, saveUninitialized: true}));
 app.use(passport.initialize());
@@ -28,9 +31,6 @@ passport.deserializeUser(User.deserializeUser());
 // Import routes
 const routes = require('./server/routes');
 app.use(routes);
-
-// Static assets
-app.use(express.static(path.join(__dirname, 'client/build')));
 
 // DB Config
 const keys = require("./config/keys");
