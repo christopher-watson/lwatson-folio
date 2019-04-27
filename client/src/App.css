@@ -431,6 +431,9 @@ form {
     cursor: auto;
   }
 
+  .display-image {
+    width: 80vw;
+  }
 
 }
 
