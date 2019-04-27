@@ -17,14 +17,14 @@ app.use(morgan('dev')); // for logging
 // Static assets
 app.use(express.static(path.join(__dirname, 'client/build')));
 
-// Import routes
-const routes = require('./server/routes');
-app.use(routes);
-
 // Use sessions to keep track of login status
 app.use(session({secret: "mastadon", resave: true, saveUninitialized: true}));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Import routes
+const routes = require('./server/routes');
+app.use(routes);
 
 // Set up passport to authenticate
 const User = require('./server/models/users');
