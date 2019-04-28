@@ -33,8 +33,3 @@ export default {
   },
 
 }
-
-// grabAllImages: async function() {
-//   const res = await axios.get('https://api.cloudinary.com/v1_1/yowats0n/resources/image')
-//   return await res;
-// },

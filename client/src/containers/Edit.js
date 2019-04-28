@@ -103,7 +103,7 @@ class Edit extends Component {
         url: url
       })
       .then(res => {
-        console.log(res.data)
+        // console.log(res.data)
         API
           .addImageToUser('5cc079b8e86e8d9769cfc66d', {
               _id: res.data._id,
@@ -134,8 +134,8 @@ class Edit extends Component {
 
   checkUploadResult = (resultEvent) => {
     if(resultEvent.event === 'success'){
-      console.log(resultEvent)
-      this.addImage(resultEvent.info.url)
+      // console.log(resultEvent)
+      this.addImage(resultEvent.info.secure_url)
     }
   }
 
