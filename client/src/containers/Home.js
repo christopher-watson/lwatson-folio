@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import API from "../utils/API";
 
 
@@ -18,6 +18,7 @@ export class MyProvider extends Component {
   componentDidMount() {
     this.handleResize()
     window.addEventListener('resize', this.handleResize)
+    window.addEventListener('keydown', this.handleKeyPress)
   }
   
   handleResize = () => {
@@ -30,28 +31,54 @@ export class MyProvider extends Component {
     }
   }
 
+  handleKeyPress = (e) => {
+    console.log(e.key)
+    if(e.key === 'ArrowRight'){
+      this.rightArrowClick()
+    }
+    if(e.key === 'ArrowLeft'){
+      this.leftArrowClick()
+    }
+  }
+
   getImages = () => {
     API
-      .findUser('lwatson14')
-      .then(res => {
-        let hArray = [];
-        let wArray = [];
+    .findUser('lwatson14')
+    .then(res => {
+        let randomNums = []
         for (var i=0; i < res.data._images.length; i++) {
-          hArray[i] = Math.floor(Math.random() * 2) + 1;
-          wArray[i] = Math.floor(Math.random() * 2) + 1;
+          randomNums[i] = Math.floor(Math.random() * 3);
         }
         this.setState({
           images: [...res.data._images],
-          hArray: [...hArray],
-          wArray: [...wArray]
+          randomNums: [...randomNums],
+          picSize: [[1, 1],[1, 2],[2, 2]],
         })
+        // console.log(this.state.picSize[randomNums[0]][0])
       })
       .catch(err => console.log(err))
   }
 
-  getIndex = () => {
-    console.log(this.state.images[0].url)
-  }
+  
+  // // PREVIOUS FUNCTION
+  // getImages = () => {
+  //   API
+  //     .findUser('lwatson14')
+  //     .then(res => {
+  //       let hArray = [];
+  //       let wArray = [];
+  //       for (var i=0; i < res.data._images.length; i++) {
+  //         hArray[i] = Math.floor(Math.random() * 2) + 1;
+  //         wArray[i] = Math.floor(Math.random() * 2) + 1;
+  //       }
+  //       this.setState({
+  //         images: [...res.data._images],
+  //         hArray: [...hArray],
+  //         wArray: [...wArray]
+  //       })
+  //     })
+  //     .catch(err => console.log(err))
+  // }
 
   showDisplayImage = (index) => {
     this.setState({ galleryView: false, displayImageIndex: index })
@@ -96,10 +123,11 @@ export class MyProvider extends Component {
         mobile: this.state.mobile,
         hArray: this.state.hArray,
         wArray: this.state.wArray,
+        picSize: this.state.picSize,
+        randomNums: this.state.randomNums,
         
-        
+          
         // functions
-        getIndex: this.getIndex,
         showDisplayImage: this.showDisplayImage,
         showGalleryView: this.showGalleryView,
         displayImage: this.displayImage,
@@ -117,7 +145,7 @@ export class MyProvider extends Component {
 const Navbar = () => {
   return (
     <MyContext.Consumer>
-      {({ showGalleryView, leftArrowClick, rightArrowClick, mobile }) => (
+      {({ showGalleryView, leftArrowClick, rightArrowClick, mobile, galleryView }) => (
         <div className='nav-div'>
         {
           mobile ?
@@ -146,10 +174,20 @@ const Navbar = () => {
               <i className="fab fa-instagram"></i>
             </a>
           </div>
-          <div className="pagination">
-            <div className='left-arrow hover' onClick={() => leftArrowClick()}><i className="fas fa-angle-double-left"></i></div>
-            <div className='right-arrow hover' onClick={() => rightArrowClick()}><i className="fas fa-angle-double-right"></i></div>
-            <div className="show-all hover" onClick={() => showGalleryView()}><i className="fas fa-th"></i></div>
+          <div className="slideshow">
+            {
+              galleryView ?
+
+                <div className="noSlideshow"></div>
+
+                :
+
+                <Fragment>
+                  <div className='left-arrow hover' onClick={() => leftArrowClick()}><i className="fas fa-angle-double-left"></i></div>
+                  <div className='right-arrow hover' onClick={() => rightArrowClick()}><i className="fas fa-angle-double-right"></i></div>
+                  <div className="show-all hover" onClick={() => showGalleryView()}><i className="fas fa-th"></i></div>
+                </Fragment>
+            }
           </div>
         </div>
       )}
@@ -161,12 +199,9 @@ const Navbar = () => {
 class Gallery extends Component {
 
   render() {
-    // function randomNumber(limit){
-    //   return Math.floor(Math.random() * limit) + 1;
-    // }
     return (
       <MyContext.Consumer>
-        {({ galleryView, images, showDisplayImage, displayImageIndex, showGalleryView, hArray, wArray }) => (
+        {({ galleryView, images, showDisplayImage, displayImageIndex, showGalleryView, hArray, wArray, picSize, randomNums }) => (
           <div className="gallery-div">
           {
 
@@ -174,7 +209,7 @@ class Gallery extends Component {
 
             <div className="inner-gallery-div">
               {images.map((image, index) => (
-                <div key={index} className='gallery-map-div hover' grid-w={wArray[index]} grid-h={hArray[index]}>
+                <div key={index} className='gallery-map-div hover' grid-w={picSize[randomNums[index]][0]} grid-h={picSize[randomNums[index]][1]}>
                   <img className='gallery-page-image' src={image.url} alt={`Lindsay: ${index+1}`} onClick={() => showDisplayImage(index)}/>
                 </div>
               ))}
