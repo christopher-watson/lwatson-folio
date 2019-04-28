@@ -32,7 +32,7 @@ export class MyProvider extends Component {
   }
 
   handleKeyPress = (e) => {
-    console.log(e.key)
+    // console.log(e.key)
     if(e.key === 'ArrowRight'){
       this.rightArrowClick()
     }
